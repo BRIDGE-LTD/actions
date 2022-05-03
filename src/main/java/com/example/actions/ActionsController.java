@@ -8,6 +8,6 @@ public class ActionsController {
 
     @GetMapping("actions")
     public String actions() {
-        return "使用 GitHub Actions 部署至服务器, 测试更新";
+        return "使用 GitHub Actions 部署至服务器, 测试更新2";
     }
 }
