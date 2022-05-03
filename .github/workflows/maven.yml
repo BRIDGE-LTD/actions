@@ -12,7 +12,7 @@ env:
   EC2_HOST: ${{ secrets.HOST_NAME }}
   SRC_PATH: 'target/*.jar'
   DEST_DIR: '/var/www'
-  APP_NAME: 'actions'    # your app name
+  APP_NAME: ${{ secrets.APP_NAME }}    # your app name
 
 jobs:
   compile:
@@ -66,9 +66,9 @@ jobs:
         with:
           command: | # 命令中的 & 表示在后台运行进程
             echo "结束服务"
-            pkill -9 -f ${APP_NAME}.jar
+            pkill -9 -f ${{ secrets.APP_NAME }}.jar
             echo "启动服务"
-            cd /var/www/actions/ && java -jar ${APP_NAME}.jar &
+            cd /var/www/actions/ && java -jar ${{ secrets.APP_NAME }}.jar &
           host: ${{ secrets.HOST_NAME }}
           user: ${{ secrets.USER_NAME }}
           key: ${{ secrets.PRIVATE_KEY }}
