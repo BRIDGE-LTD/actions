@@ -61,32 +61,12 @@ jobs:
           ssh -t -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} "sudo mkdir -p $DEST_DIR/$APP_NAME && sudo chmod -R 777 $DEST_DIR/$APP_NAME"
           scp -i private_key ${SRC_PATH} ${EC2_USER}@${EC2_HOST}:${DEST_DIR}/${APP_NAME}/${APP_NAME}.jar
       - name: 在服务器上执行 java -jar
-        uses: appleboy/ssh-action@v0.0.9
+        if: always()
+        uses: fifsky/ssh-action@master
         with:
+          command: | # 命令中的 & 表示在后台运行进程
+            cd /var/www/ && java -jar actions.jar &
           host: ${{ secrets.HOST_NAME }}
-          username: ${{ secrets.USER_NAME }}
+          user: ${{ secrets.USER_NAME }}
           key: ${{ secrets.PRIVATE_KEY }}
-          envs: DEST_DIR,APP_NAME
-          script: |
-            [Service]
-            ExecStart =  ${DEST_DIR}/${APP_NAME}/${APP_NAME}.jar
-            Restart = always
-            Type = simple
-            User = root
-            Group = root
-            SuccessExitStatus = 143
-  
-            [Install]
-            WantedBy = multi-user.target
-            EOL
-            fi
-            echo "===== application (re)start ====="
-            sudo systemctl daemon-reload
-            if sudo systemctl status ${APP_NAME} 2>&1 | grep "Active: active (running)" ; then
-              echo "${APP_NAME} app restart!!"
-              sudo systemctl restart ${APP_NAME}
-            else
-            echo "${APP_NAME} app start!!"
-            sudo systemctl start ${APP_NAME}
-            fi
-            
+          args: "-tt"
