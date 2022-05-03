@@ -7,6 +7,13 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  EC2_USER: ${{ secrets.USER_NAME }}
+  EC2_HOST: ${{ secrets.HOST_NAME }}
+  SRC_PATH: 'target/*.jar'
+  DEST_DIR: '/var/www'
+  APP_NAME: 'actions'    # your app name
+
 jobs:
   compile:
     runs-on: ubuntu-latest
@@ -49,11 +56,6 @@ jobs:
       - name: 将 JAR 包部署到服务器
         env:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          EC2_USER: ${{ secrets.USER_NAME }}
-          EC2_HOST: ${{ secrets.HOST_NAME }}
-          SRC_PATH: 'target/*.jar'
-          DEST_DIR: '/var/www'
-          APP_NAME: 'actions'    # your app name
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -t -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} "sudo mkdir -p $DEST_DIR/$APP_NAME && sudo chmod -R 777 $DEST_DIR/$APP_NAME"
@@ -63,6 +65,9 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: | # 命令中的 & 表示在后台运行进程
+            echo "结束服务"
+            pkill -9 -f ${APP_NAME}.jar
+            echo "启动服务"
             cd /var/www/actions/ && java -jar actions.jar &
           host: ${{ secrets.HOST_NAME }}
           user: ${{ secrets.USER_NAME }}
