@@ -51,7 +51,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           EC2_USER: ${{ secrets.USER_NAME }}
           EC2_HOST: ${{ secrets.HOST_NAME }}
-          SRC_PATH: 'build/libs/*.jar'
+          SRC_PATH: 'target/*.jar'
           DEST_DIR: '/var/www'
           APP_NAME: 'actions'    # your app name
         run: |
