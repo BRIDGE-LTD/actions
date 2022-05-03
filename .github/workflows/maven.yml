@@ -41,8 +41,8 @@ jobs:
           local: target/actions-0.0.1-SNAPSHOT.jar
           remote: var/www/actions/actions.jar
           host: ${{ secrets.HOST_NAME }}
-          user: ${{ secrets.USER_NAME }}
-          pass: ${{ secrets.PASSWORD }}
+          username: ${{ secrets.USER_NAME }}
+          password: ${{ secrets.PASSWORD }}
       - name: 在服务器上执行 java -jar，请确保服务器安装了 JDK
         if: always()
         uses: fifsky/ssh-action@master
@@ -50,6 +50,6 @@ jobs:
           command: | # 命令中的 & 表示在后台运行进程
             cd var/www/actions/ && java -jar actions.jar &
           host: ${{ secrets.HOST_NAME }}
-          user: ${{ secrets.USER_NAME }}
-          pass: ${{ secrets.PASSWORD }}
+          username: ${{ secrets.USER_NAME }}
+          password: ${{ secrets.PASSWORD }}
           args: "-tt"
