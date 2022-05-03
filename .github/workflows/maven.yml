@@ -36,13 +36,17 @@ jobs:
       - name: Generate the package
         run: mvn -B package --file pom.xml -Dmaven.test.skip=true
       - name: 将 JAR 包部署到服务器
-        uses: garygrossgarten/github-action-scp@release
-        with:
-          local: target/actions-0.0.1-SNAPSHOT.jar
-          remote: var/www/actions/actions.jar
-          host: ${{ secrets.HOST_NAME }}
-          username: ${{ secrets.USER_NAME }}
-          password: ${{ secrets.PASSWORD }}
+        uses: easingthemes/ssh-deploy@main
+        env:
+          #local: target/actions-0.0.1-SNAPSHOT.jar
+          #remote: var/www/actions/actions.jar
+          #host: ${{ secrets.HOST_NAME }}
+          #username: ${{ secrets.USER_NAME }}
+          #password: ${{ secrets.PASSWORD }}
+          SSH_PRIVATE_KEY: ${ { secrets.PRIVATE_KEY }}
+          REMOTE_HOST: ${ { secrets.HOST_NAME }}
+          REMOTE_USER: ${ { secrets.USER_NAME }}
+          TARGET: var/www/actions/
       - name: 在服务器上执行 java -jar，请确保服务器安装了 JDK
         if: always()
         uses: fifsky/ssh-action@master
