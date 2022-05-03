@@ -65,6 +65,7 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: | # 命令中的 & 表示在后台运行进程
+            pkill -9 -f actions.jar
             cd /var/www/ && java -jar actions.jar &
           host: ${{ secrets.HOST_NAME }}
           user: ${{ secrets.USER_NAME }}
