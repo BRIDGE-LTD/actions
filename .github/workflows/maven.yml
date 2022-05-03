@@ -64,9 +64,33 @@ jobs:
         if: always()
         uses: fifsky/ssh-action@master
         with:
-          command: | # 命令中的 & 表示在后台运行进程
-            cd /var/www/ && pkill -9 -f actions.jar && java -jar actions.jar &
+#          command: | # 命令中的 & 表示在后台运行进程
+#            cd /var/www/ && pkill -9 -f actions.jar && java -jar actions.jar &
           host: ${{ secrets.HOST_NAME }}
           user: ${{ secrets.USER_NAME }}
           key: ${{ secrets.PRIVATE_KEY }}
-          args: "-tt"
+#          args: "-tt"
+          envs: DEST_DIR,APP_NAME
+          script: |
+            [Service]
+            ExecStart =  ${DEST_DIR}/${APP_NAME}/${APP_NAME}.jar
+            Restart = always
+            Type = simple
+            User = root
+            Group = root
+            SuccessExitStatus = 143
+  
+            [Install]
+            WantedBy = multi-user.target
+            EOL
+            fi
+            echo "===== application (re)start ====="
+            sudo systemctl daemon-reload
+            if sudo systemctl status ${APP_NAME} 2>&1 | grep "Active: active (running)" ; then
+              echo "${APP_NAME} app restart!!"
+              sudo systemctl restart ${APP_NAME}
+            else
+            echo "${APP_NAME} app start!!"
+            sudo systemctl start ${APP_NAME}
+            fi
+            
