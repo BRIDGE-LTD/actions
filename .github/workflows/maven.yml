@@ -1,0 +1,55 @@
+name: Java CI with Maven
+
+on:
+  push:
+    # 分支
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  compile:
+    runs-on: self-hosted
+    name: Running Java ${{ matrix.java }} compile
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+      - name: 缓存 Maven 依赖
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: 编译代码
+        run: mvn compile
+      - name: Deploy the JAR file to the remote server
+        uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Generate the package
+        run: mvn -B package --file pom.xml -Dmaven.test.skip=true
+      - name: 将 JAR 包部署到服务器
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: target/actions-0.0.1-SNAPSHOT.jar
+          remote: var/www/actions/actions.jar
+          host: ${{ secrets.HOST_NAME }}
+          user: ${{ secrets.USER_NAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+      - name: 在服务器上执行 java -jar，请确保服务器安装了 JDK
+        if: always()
+        uses: fifsky/ssh-action@master
+        with:
+          command: | # 命令中的 & 表示在后台运行进程
+            cd var/www/actions/ && java -jar actions.jar &
+          host: ${{ secrets.HOST_NAME }}
+          user: ${{ secrets.USER_NAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          args: "-tt"
