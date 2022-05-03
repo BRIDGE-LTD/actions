@@ -60,16 +60,12 @@ jobs:
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -t -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} "sudo mkdir -p $DEST_DIR/$APP_NAME && sudo chmod -R 777 $DEST_DIR/$APP_NAME"
           scp -i private_key ${SRC_PATH} ${EC2_USER}@${EC2_HOST}:${DEST_DIR}/${APP_NAME}/${APP_NAME}.jar
-      - name: 在服务器上执行 java -jar，请确保服务器安装了 JDK
+      - name: 在服务器上执行 java -jar
         if: always()
         uses: fifsky/ssh-action@master
         with:
-          envs: APP_NAME,DEST_DIR
           command: | # 命令中的 & 表示在后台运行进程
-            echo "结束服务"
-            pkill -9 -f actions.jar
-            echo "启动服务"
-            cd /var/www/ && java -jar actions.jar &
+            cd /var/www/ && pkill -9 -f actions.jar && java -jar actions.jar &
           host: ${{ secrets.HOST_NAME }}
           user: ${{ secrets.USER_NAME }}
           key: ${{ secrets.PRIVATE_KEY }}
