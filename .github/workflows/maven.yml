@@ -36,16 +36,16 @@ jobs:
       - name: Generate the package
         run: mvn -B package --file pom.xml -Dmaven.test.skip=true
       - name: 将 JAR 包部署到服务器
-        uses: fifsky/ssh-action@master
+        uses: garygrossgarten/github-action-scp@release
         env:
           local: target/actions-0.0.1-SNAPSHOT.jar
           remote: var/www/actions/actions.jar
-          #host: ${{ secrets.HOST_NAME }}
-          #username: ${{ secrets.USER_NAME }}
-          #password: ${{ secrets.PASSWORD }}
-          key: ${{ secrets.PRIVATE_KEY }}
           host: ${{ secrets.HOST_NAME }}
           username: ${{ secrets.USER_NAME }}
+          password: ${{ secrets.PASSWORD }}
+          #key: ${{ secrets.PRIVATE_KEY }}
+          #host: ${{ secrets.HOST_NAME }}
+          #username: ${{ secrets.USER_NAME }}
       - name: 在服务器上执行 java -jar，请确保服务器安装了 JDK
         if: always()
         uses: fifsky/ssh-action@master
@@ -53,6 +53,6 @@ jobs:
           command: | # 命令中的 & 表示在后台运行进程
             cd /var/www/actions/ && java -jar actions.jar &
           host: ${{ secrets.HOST_NAME }}
-          username: ${{ secrets.USER_NAME }}
-          password: ${{ secrets.PASSWORD }}
+          user: ${{ secrets.USER_NAME }}
+          pass: ${{ secrets.PASSWORD }}
           args: "-tt"
