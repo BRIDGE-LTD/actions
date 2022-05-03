@@ -46,13 +46,13 @@ jobs:
           SSH_PRIVATE_KEY: ${ { secrets.PRIVATE_KEY }}
           REMOTE_HOST: ${ { secrets.HOST_NAME }}
           REMOTE_USER: ${ { secrets.USER_NAME }}
-          TARGET: var/www/actions/
+          TARGET: /var/www/actions/
       - name: 在服务器上执行 java -jar，请确保服务器安装了 JDK
         if: always()
         uses: fifsky/ssh-action@master
         with:
           command: | # 命令中的 & 表示在后台运行进程
-            cd var/www/actions/ && java -jar actions.jar &
+            cd /var/www/actions/ && java -jar actions.jar &
           host: ${{ secrets.HOST_NAME }}
           username: ${{ secrets.USER_NAME }}
           password: ${{ secrets.PASSWORD }}
