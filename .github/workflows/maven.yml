@@ -65,7 +65,7 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           envs: APP_NAME,DEST_DIR
-          command: | # 命令中的 & 表示在后台运行进程
+          run: | # 命令中的 & 表示在后台运行进程
             echo "结束服务"
             pkill -9 -f ${APP_NAME}.jar
             echo "启动服务"
