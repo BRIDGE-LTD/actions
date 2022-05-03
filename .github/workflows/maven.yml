@@ -42,8 +42,8 @@ jobs:
           remote: var/www/actions/actions.jar
           host: ${{ secrets.HOST_NAME }}
           username: ${{ secrets.USER_NAME }}
-          password: ${{ secrets.PASSWORD }}
-          #key: ${{ secrets.PRIVATE_KEY }}
+          #password: ${{ secrets.PASSWORD }}
+          privateKey: ${{ secrets.PRIVATE_KEY }}
           #host: ${{ secrets.HOST_NAME }}
           #username: ${{ secrets.USER_NAME }}
       - name: 在服务器上执行 java -jar，请确保服务器安装了 JDK
